@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description = 'train')
 
 parser.add_argument('--epoch', type = int, default = 2500, help = 'config file')
 parser.add_argument('--bs', type = int, default = 2, help = 'config file')
-parser.add_argument('--classes', type = int, default = 2, help = 'config file')
+parser.add_argument('--classes', type = int, default = 1, help = 'config file')
 parser.add_argument('--lr', type = float, default = 0.1, help = 'config file')
 parser.add_argument('--test', type = bool, default = True, help = 'config file')
 
@@ -21,9 +21,9 @@ def train():
 	batch_size=args.bs
 	lr=args.lr
 	classes=args.classes
-	criterion=TL_Loss()
-	model=Siamese_TU_Net_TL(classes).cuda()
-	_,_,_,traindata=load_data('./data/TNO/',0,1,True)
+	criterion=BL_Loss()
+	model=Siamese_TDeepLab_BL(classes).cuda()
+	_,_,_,traindata=load_data('./data/',0,1,True)
 	opt=torch.optim.Adam(model.parameters(),lr)
 	for i in range(1,epoch+1):
 		allloss=0
@@ -31,8 +31,8 @@ def train():
 			for j in range(0,math.ceil(traindata/batch_size)):
 				train_bar.update(1)
 				input1,input2,GT,_=load_data('./data/',j,batch_size,True)
-				f11,f12,t1,f21,f22,t2=model(input1,input2,input1,input2)
-				loss=criterion(GT,t1,GT,t2,f11,f12,f21,f22)
+				t1,t2=model(input1,input2,input1,input2)
+				loss=criterion(t1,GT,t2,GT)
 				opt.zero_grad()
 				loss.backward()
 				opt.step()

@@ -94,39 +94,39 @@ class TDeepLab_TL(nn.Module):
 		return x
 
 class Siamese_TDeepLab_BL(nn.Module):
-	def __init__(self):
+	def __init__(self,classes):
 		super(Siamese_TDeepLab_BL,self).__init__()
 
 		self.backbone_1=backbone(4)
 		self.aspp_1=ASPP(2048,500,3)
 
 		self.backbone_2=backbone(4)
-		self.aspp_2=ASPP(2048,500,3)
+		self.aspp_2=ASPP(2048,500,classes)
 
 	def forward(self,t1_1,t1_2,t2_1,t2_2):
 		t1=torch.cat((t1_1,t1_2),1)
 		t2=torch.cat((t2_1,t2_2),1)
 
 		t1=self.backbone_1(t1)
-		t1=self.aspp(t1)
+		t1=self.aspp_1(t1)
 
 		t2=self.backbone_2(t2)
-		t2=self.aspp(t2)
+		t2=self.aspp_2(t2)
 
 		return t1,t2
 
 class Siamese_TDeepLab_TL(nn.Module):
-	def __init__(self):
+	def __init__(self,classes):
 		super(Siamese_TDeepLab_TL,self).__init__()
 		self.backbone1_1=backbone()
 		self.backbone1_2=backbone()
-		self.aspp1_1=ASPP(2048,500,3)
-		self.aspp1_2=ASPP(2048,500,3)
+		self.aspp1_1=ASPP(2048,500,classes)
+		self.aspp1_2=ASPP(2048,500,classes)
 
 		self.backbone2_1=backbone()
 		self.backbone2_2=backbone()
-		self.aspp2_1=ASPP(2048,500,3)
-		self.aspp2_2=ASPP(2048,500,3)
+		self.aspp2_1=ASPP(2048,500,classes)
+		self.aspp2_2=ASPP(2048,500,classes)
 
 	def forward(self,t1_1,t1_2,t2_1,t2_2):
 
